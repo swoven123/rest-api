@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.swoven.webservice.restapi.entity.Person;
 import org.swoven.webservice.restapi.utils.TestUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -61,6 +62,21 @@ public class PersonRepositoryTest {
     personRepository.deleteById(personFromDb.getId());
     List<Person> personList = (List<Person>) personRepository.findAll();
     assertEquals(0, personList.size());
+  }
+
+  @Test
+  public void testSaveAll() {
+    List<Person> personList = new ArrayList<>();
+    Person person = TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    Person person1 =TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    Person person2 =TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    personList.add(person);
+    personList.add(person1);
+    personList.add(person2);
+    personRepository.saveAll(personList);
+    List<Person> listFromDb = (List<Person>) personRepository.findAll();
+    assertEquals(3, listFromDb.size());
+    personRepository.deleteAll();
   }
 
 }

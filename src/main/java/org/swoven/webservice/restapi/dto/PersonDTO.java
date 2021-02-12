@@ -1,9 +1,5 @@
 package org.swoven.webservice.restapi.dto;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,17 +10,13 @@ import java.util.Objects;
 public class PersonDTO implements Serializable {
 
   private String id;
-  @NotNull
-  @Size(min = 1)
+
   private String firstName;
-  @NotNull
-  @Size(min = 1)
+
   private String lastName;
-  @Min(1)
-  @Max(200)
+
   private int age;
-  @NotNull
-  @Size(min=3)
+
   private String favouriteColour;
 
   public String getId() {

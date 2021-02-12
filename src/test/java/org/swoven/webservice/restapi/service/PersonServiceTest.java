@@ -6,9 +6,11 @@ import org.swoven.webservice.restapi.entity.Person;
 import org.swoven.webservice.restapi.service.implementation.PersonServiceImpl;
 import org.swoven.webservice.restapi.utils.TestUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+
 public class PersonServiceTest {
 
   private PersonService personService;
@@ -52,13 +54,26 @@ public class PersonServiceTest {
   }
 
   @Test
-  public void removePersonByIdMethod() {
+  public void testRemovePersonByIdMethod() {
     Person person = TestUtils.createDummyPerson("Swoven", "Pokharel", 1, "Blue");
     personService.addOrUpdatePerson(person);
     List<Person> personList = personService.getAllPerson();
     String idToBeTested = personList.get(0).getId();
     personService.removePersonById(idToBeTested);
     assertEquals(0, personService.getAllPerson().size());
+  }
+
+  @Test
+  public void testBulkInsertMethod() {
+    List<Person> personList = new ArrayList<>();
+    Person person = TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    Person person1 = TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    Person person2 = TestUtils.createDummyPerson("Test", "Test", 30, "blue");
+    personList.add(person);
+    personList.add(person1);
+    personList.add(person2);
+    personService.bulkInsert(personList);
+    assertEquals(3, personService.getAllPerson().size());
   }
 
 }

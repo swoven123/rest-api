@@ -38,6 +38,11 @@ public class PersonServiceImpl implements PersonService {
   }
 
   @Override
+  public void bulkInsert(List<Person> personList) {
+    personRepository.saveAll(personList);
+  }
+
+  @Override
   public void removePersonById(String id) {
     personRepository.deleteById(id);
   }

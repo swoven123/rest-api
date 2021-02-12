@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swoven.webservice.restapi.dto.PersonDTO;
+import org.swoven.webservice.restapi.dto.PersonDTOCollection;
 import org.swoven.webservice.restapi.entity.Person;
 import org.swoven.webservice.restapi.service.PersonService;
 import org.swoven.webservice.restapi.util.ApiResponse;
 import org.swoven.webservice.restapi.util.Constants;
 import org.swoven.webservice.restapi.util.Status;
 
-import javax.validation.Valid;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
  * This is the main controller class and is the entry point for endpoints
  */
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/persons")
 public class PersonController {
 
   private PersonService personService;
@@ -63,19 +62,19 @@ public class PersonController {
   }
 
   @PostMapping
-  public ApiResponse addPerson(@RequestBody @Valid PersonDTO personDTO) {
-    Person person = null;
+  public ApiResponse addPerson(@RequestBody PersonDTOCollection personDTOCollection) {
+    List<Person> persons = null;
     try {
-      person = convertToEntity(personDTO);
-      personService.addOrUpdatePerson(person);
-    } catch (ParseException e) {
+      persons = personDTOCollection.getPersons().stream().map(this::convertToEntity).collect(Collectors.toList());
+      personService.bulkInsert(persons);
+    } catch (Exception e) {
       return new ApiResponse(Status.ERROR.value(), null, Constants.ERROR_SAVING_PERSON);
     }
-    return new ApiResponse(Status.OK.value(), Collections.singletonList(personDTO), null);
+    return new ApiResponse(Status.OK.value(), personDTOCollection.getPersons(), null);
   }
 
   @PutMapping(value = "/{id}")
-  public ApiResponse updatePerson(@PathVariable("id") String id, @RequestBody @Valid PersonDTO personDTO) {
+  public ApiResponse updatePerson(@PathVariable("id") String id, @RequestBody PersonDTO personDTO) {
     Person person = null;
     try {
       person = personService.getPersonById(id);
@@ -108,7 +107,7 @@ public class PersonController {
     return personDTO;
   }
 
-  private Person convertToEntity(PersonDTO personDTO) throws ParseException {
+  private Person convertToEntity(PersonDTO personDTO) {
     Person person = modelMapper.map(personDTO, Person.class);
     return person;
   }

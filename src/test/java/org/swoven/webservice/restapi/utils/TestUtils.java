@@ -45,7 +45,10 @@ public class TestUtils {
 
       @Override
       public <S extends Person> Iterable<S> saveAll(Iterable<S> iterable) {
-        return null;
+        for (S s : iterable) {
+          personList.add(s);
+        }
+        return iterable;
       }
 
       @Override

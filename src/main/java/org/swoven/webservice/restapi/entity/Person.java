@@ -7,6 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
@@ -22,15 +26,23 @@ public class Person {
   private String id;
 
   @Column(name = "first_name")
+  @NotNull
+  @Size(min = 1)
   private String firstName;
 
   @Column(name = "last_name")
+  @NotNull
+  @Size(min = 1)
   private String lastName;
 
   @Column
+  @Min(1)
+  @Max(200)
   private int age;
 
   @Column(name = "favourite_colour")
+  @NotNull
+  @Size(min=3)
   private String favouriteColour;
 
   public String getId() {

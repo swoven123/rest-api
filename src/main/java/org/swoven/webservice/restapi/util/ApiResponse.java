@@ -11,12 +11,12 @@ import java.util.List;
 public class ApiResponse {
 
   private String status;
-  private List<PersonDTO> personDTOList;
+  private List<PersonDTO> persons;
   private String errorMessage;
 
-  public ApiResponse(String status, List<PersonDTO> personDTOList, String errorMessage) {
+  public ApiResponse(String status, List<PersonDTO> persons, String errorMessage) {
     this.status = status;
-    this.personDTOList = personDTOList;
+    this.persons = persons;
     this.errorMessage = errorMessage;
   }
 
@@ -28,12 +28,12 @@ public class ApiResponse {
     this.status = status;
   }
 
-  public List<PersonDTO> getPersonDTOList() {
-    return personDTOList;
+  public List<PersonDTO> getPersons() {
+    return persons;
   }
 
-  public void setPersonDTOList(List<PersonDTO> personDTOList) {
-    this.personDTOList = personDTOList;
+  public void setPersons(List<PersonDTO> persons) {
+    this.persons = persons;
   }
 
   public String getErrorMessage() {

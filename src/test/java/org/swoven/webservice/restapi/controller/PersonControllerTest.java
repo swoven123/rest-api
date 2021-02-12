@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -41,11 +42,11 @@ public class PersonControllerTest {
     Person dummyPerson3 = getDummyPerson();
     when(service.getAllPerson()).thenReturn(Arrays.asList(dummyPerson, dummyPerson2, dummyPerson3));
     this.mockMvc.
-            perform(get("/person").
+            perform(get("/persons").
                     with(user("user@user.com").
                             password("user").roles("ADMIN"))).
             andExpect(status().isOk()).
-            andExpect(jsonPath("$.personDTOList[*]", hasSize(3)));
+            andExpect(jsonPath("$.persons[*]", hasSize(3)));
   }
 
   @Test
@@ -54,21 +55,35 @@ public class PersonControllerTest {
     String randomId = UUID.randomUUID().toString();
     dummyPerson.setId(randomId);
     when(service.getPersonById(randomId)).thenReturn(dummyPerson);
-    this.mockMvc.perform(get("/person/" + randomId).with(user("user@user.com").
+    this.mockMvc.perform(get("/persons/" + randomId).with(user("user@user.com").
             password("user").roles("ADMIN"))).andExpect(status().isOk()).
-            andExpect(jsonPath("$.personDTOList[0].id", is(randomId)));
+            andExpect(jsonPath("$.persons[0].id", is(randomId)));
   }
 
   @Test
   public void testAddPersonApi() throws Exception {
-    Person dummyPerson = getDummyPerson();
-    doNothing().when(service).addOrUpdatePerson(dummyPerson);
-    this.mockMvc.perform(post("/person/").contentType(MediaType.APPLICATION_JSON)
-            .content("{\"firstName\":\"Dummy\", \"lastName\": \"Dummy\", \"age\":31, \"favouriteColour\": \"Dummy\"}").
+    doNothing().when(service).bulkInsert(anyList());
+    this.mockMvc.perform(post("/persons/").contentType(MediaType.APPLICATION_JSON)
+            .content("{\n" +
+                    "\"persons\": [\n" +
+                    "{\n" +
+                    "\"firstName\": \"John\",\n" +
+                    "\"lastName\": \"Keynes\",\n" +
+                    "\"age\": 100,\n" +
+                    "\"favouriteColour\": \"red\"\n" +
+                    "},\n" +
+                    "{\n" +
+                    "\"firstName\": \"Sarah\",\n" +
+                    "\"lastName\": \"Robinson\",\n" +
+                    "\"age\": \"54\",\n" +
+                    "\"favouriteColour\": \"blue\"\n" +
+                    "}\n" +
+                    "]\n" +
+                    "}").
                     with(user("user@user.com").
                             password("user").roles("ADMIN"))).
             andExpect(status().isOk()).
-            andExpect(jsonPath("$.personDTOList[0].firstName", is("Dummy")));
+            andExpect(jsonPath("$.persons[*]", hasSize(2)));
   }
 
   @Test
@@ -80,18 +95,18 @@ public class PersonControllerTest {
     updatedPerson.setFirstName("Modified");
     doNothing().when(service).addOrUpdatePerson(updatedPerson);
 
-    this.mockMvc.perform(put("/person/testId123").contentType(MediaType.APPLICATION_JSON)
+    this.mockMvc.perform(put("/persons/testId123").contentType(MediaType.APPLICATION_JSON)
             .content("{\"id\":\"testId123\", \"firstName\":\"Modified\", \"lastName\": \"Dummy\", \"age\":31, \"favouriteColour\": \"Dummy\"}").
                     with(user("user@user.com").
                             password("user").roles("ADMIN"))).
             andExpect(status().isOk()).
-            andExpect(jsonPath("$.personDTOList[0].firstName", is("Modified")));
+            andExpect(jsonPath("$.persons[0].firstName", is("Modified")));
   }
 
   @Test
   public void testDeletePersonApi() throws Exception {
     doNothing().when(service).removePersonById(anyString());
-    this.mockMvc.perform(delete("/person/anyRandomId123").with(user("user@user.com").password("user").roles("ADMIN"))).
+    this.mockMvc.perform(delete("/persons/anyRandomId123").with(user("user@user.com").password("user").roles("ADMIN"))).
             andExpect(status().isOk()).
             andExpect(jsonPath("$.status", is("SUCCESS")));
   }
